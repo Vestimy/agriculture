@@ -1,0 +1,29 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="row ">
+    <h1 class="mt-5">КОМПАНИИ</h1>
+    <div class="row">
+        <div class="col">
+            {% for i in company %}
+            <p><a href="">{{ i.name_company }}</a></p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col col-lg-2">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

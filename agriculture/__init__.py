@@ -1,4 +1,4 @@
-from flask import Flask, redirect, request,url_for, render_template
+from flask import Flask, redirect, request, url_for, render_template
 from .config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView
@@ -20,6 +20,10 @@ def create_app():
     login.init_app(app)
     # security.init_app(app, user_datastore, register_form=ExtendedRegisterForm)
     security.init_app(app, user_datastore)
+
+    from .views.main.views import main
+
+    app.register_blueprint(main)
 
     return app
 
@@ -54,10 +58,13 @@ class HomeAdminView(AdminMixIn, AdminIndexView):
     # def inaccessible_callback(self, name, **kwargs):
     #     return redirect(url_for('security.login', next=request.url))
 
+
 #
 # admin.add_view(AdminView(User, db.session))
 # admin.add_view(AdminView(Role, db.session))
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Role, db.session))
+admin.add_view(ModelView(Company, db.session))
+# admin.add_view(ModelView(Role, db.session))
 
 user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)

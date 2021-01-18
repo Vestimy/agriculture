@@ -18,6 +18,18 @@ association = db.Table('association',
                        db.Column('roles_id', db.Integer, db.ForeignKey('roles.id')))
 
 
+class Company(db.Model):
+    __tablename__ = 'company'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name_company = db.Column(db.String(250))
+    name = db.Column(db.String(250))
+    address = db.Column(db.String(250))
+    phone = db.Column(db.String(250))
+    edit_time = db.Column(DateTime, onupdate=time_now)
+    create_time = db.Column(DateTime, default=time_now)
+
+
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -46,8 +58,6 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"{self.last_name} {self.first_name}"
-
-
 
 
 class Role(db.Model, RoleMixin):

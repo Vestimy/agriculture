@@ -1,0 +1,164 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="row">
+    <form method="POST">
+        <div class="mb-3">
+            {{ form.user_id.label(class='form-label') }}
+            {{ form.user_id(class='form-control', placeholder="Введите название семян") }}
+        </div>
+        <div class="mb-3">
+            {{ form.company_id.label(class='form-label') }}
+            {{ form.company_id(class='form-control', placeholder="Введите название семян") }}
+        </div>
+        <div class="form-group" id="data_1">
+            {{ form.date.label(class='form-label font-normal', type='date') }}
+            <div class="input-group date">
+                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                {% if form.date.data %}
+                {{ form.date(class='form-control', value=form.date.data) }}
+                {% else %}
+                {{ form.date(class='form-control', value=date.strftime('%Y-%m-%d')) }}
+                {% endif %}
+            </div>
+        </div>
+        <div class="mb-3">
+
+        </div>
+
+        <div class="mb-3">
+            {{ form.time.label(class='form-label') }}
+            <div class="input-group clockpicker " data-autoclose="true">
+
+                {% if form.date.time %}
+                {{ form.time(class='form-control',value=form.time.data.strftime('%H:%M')) }}
+                {% else %}
+                {{ form.time(class='form-control',value='09:30') }}
+                {% endif %}
+                <span class="input-group-addon">
+                                    <span class="fa fa-clock-o"></span>
+                                </span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            {{ form.note.label(class='form-label') }}
+            {{ form.note(class='form-control', placeholder="") }}
+        </div>
+        <div class="mb-3">
+            {{ form.submit(class='btn btn-info') }}
+        </div>
+    </form>
+</div>
+
+
+<table class="table table-striped table-info ">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Название</th>
+        <th scope="col">Менеджер</th>
+        <th scope="col">Описание</th>
+        <th scope="col"></th>
+        <!--        <th scope="col">Handle</th>-->
+    </tr>
+    </thead>
+    <tbody>
+    {% for event in events %}
+    <tr>
+        <th scope="row">
+            <!--            {{ event.id }}-->
+
+        </th>
+        <td>{{ event.company.name_company }}</td>
+        <td>{% if event.date %}{{ event.date }} в {{event.time.strftime('%H:%M')}} {% endif %}</td>
+        <td>{{ event.users.last_name }} {{ event.users.first_name }}</td>
+        <!--        <td>@mdo</td>-->
+
+        <td>
+            <span><a href="{{ url_for('main.event', edit=event.id)}}"
+                     class="btn btn-info btn-sm">Изменить</a></span>
+            <span><a href="{{ url_for('main.event_delete', id=event.id)}}"
+                     class="btn btn-info btn-sm">Удалить</a></span>
+        </td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+        $(document).ready(function(){
+            var mem = $('#data_1 .input-group.date').datepicker({
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                calendarWeeks: true,
+                autoclose: true,
+                format: "yyyy-mm-dd"
+            });
+
+        });
+</script>
+
+<script type="text/javascript">
+$('.clockpicker').clockpicker();
+</script>
+<script type="text/javascript">
+            function choice_category(){
+            var tmp_id = parseInt ($("#user_id").val());
+            if(tmp_id == 0)
+            {
+                $("#company_id").attr('disabled', 'disabled');
+            }
+            else
+            {
+                $("#company_id").removeAttr('disabled');
+                load_subcategory();
+            }
+        }
+
+        function load_subcategory(){
+            $.ajax({
+                type: "POST",
+                url: "/api/company_choices",
+                data: $('form').serialize(),
+                success: function(response) {
+                    var json = jQuery.parseJSON(response)
+                    obj = Object.keys(json)
+                    $("#company_id")
+                        .find('option')
+                        .remove()
+                        .end()
+                        .val('0');
+
+                    var value, key;
+                    for(item in obj){
+                        value = json[obj[item]];
+                        key = obj[item];
+                    $("#company_id").append($("<option></option>")
+                            .attr("value",key)
+                            .text(value));
+                    }
+
+                },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+        }
+
+        $(document).ready(function() {
+            choice_category();
+            $("#user_id").change(function() {
+                choice_category();
+            });
+
+            $("#company_id").change(function() {
+            });
+        });
+
+
+</script>
+{% endblock %}

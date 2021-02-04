@@ -17,6 +17,11 @@ association = db.Table('association',
                        db.Column('users_id', db.Integer, db.ForeignKey('users.id')),
                        db.Column('roles_id', db.Integer, db.ForeignKey('roles.id')))
 
+association_company = db.Table('association_company',
+                               db.Model.metadata,
+                               db.Column('users_id', db.Integer, db.ForeignKey('users.id')),
+                               db.Column('company_id', db.Integer, db.ForeignKey('company.id')))
+
 
 class Company(db.Model):
     __tablename__ = 'company'
@@ -26,8 +31,76 @@ class Company(db.Model):
     name = db.Column(db.String(250))
     address = db.Column(db.String(250))
     phone = db.Column(db.String(250))
+    name_agro = db.Column(db.String(128))
+    phone_agro = db.Column(db.String(128))
     edit_time = db.Column(DateTime, onupdate=time_now)
     create_time = db.Column(DateTime, default=time_now)
+
+    users = relationship('User', secondary=association_company, back_populates='company', lazy=True)
+    event = relationship('Event', back_populates='company')
+
+    def __repr__(self):
+        return self.name
+
+
+class Seed(db.Model):
+    __tablename__ = 'seed'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250))
+    description = db.Column(db.String(500))
+    edit_time = db.Column(DateTime, onupdate=time_now)
+    create_time = db.Column(DateTime, default=time_now)
+
+
+class ProtectionPlants(db.Model):
+    __tablename__ = 'protectionplants'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250))
+    description = db.Column(db.String(500))
+
+    plant = relationship('Plant', back_populates='protectionplants')
+
+    edit_time = db.Column(DateTime, onupdate=time_now)
+    create_time = db.Column(DateTime, default=time_now)
+
+    def __repr__(self):
+        return self.name
+
+
+class Plant(db.Model):
+    __tablename__ = 'plant'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250))
+    firm_manufacturer = db.Column(db.String(250))
+    price = db.Column(db.String(250))
+    norm_making = db.Column(db.String(250))
+    packaging = db.Column(db.String(250))
+    description = db.Column(db.String(500))
+
+    protectionplants_id = db.Column(Integer, ForeignKey('protectionplants.id'))
+    protectionplants = relationship('ProtectionPlants', back_populates='plant')
+
+    edit_time = db.Column(DateTime, onupdate=time_now)
+    create_time = db.Column(DateTime, default=time_now)
+
+
+class Event(db.Model):
+    __tablename__ = 'event'
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(Date)
+    time = db.Column(Time)
+    note = db.Column(String(500))
+    edit_time = db.Column(DateTime, onupdate=time_now)
+    create_time = db.Column(DateTime, default=time_now)
+
+    company_id = db.Column(Integer, ForeignKey('company.id'))
+    company = relationship('Company', back_populates='event')
+
+    user_id = db.Column(Integer, ForeignKey('users.id'))
+    users = relationship('User', back_populates='event')
 
 
 class User(db.Model, UserMixin):
@@ -52,7 +125,9 @@ class User(db.Model, UserMixin):
     photo = db.Column(db.String(255))
 
     roles = relationship('Role', secondary=association, back_populates='users', lazy=True)
+    company = relationship('Company', secondary=association_company, back_populates='users', lazy=True)
 
+    event = relationship('Event', back_populates='users')
     edit_time = db.Column(DateTime, onupdate=time_now)
     create_time = db.Column(DateTime, default=time_now)
 

@@ -5,6 +5,7 @@ from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_security import Security, SQLAlchemySessionUserDatastore, current_user
 from flask_login import LoginManager
+import os
 
 db = SQLAlchemy()
 admin = Admin(name='admins')
@@ -24,6 +25,12 @@ def create_app():
     from .views.main.views import main
 
     app.register_blueprint(main)
+
+    @app.route('/nnn')
+    def nnn():
+        # os.makedirs()
+        da = app.root_path
+        print(da)
 
     return app
 
@@ -65,6 +72,10 @@ class HomeAdminView(AdminMixIn, AdminIndexView):
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Role, db.session))
 admin.add_view(ModelView(Company, db.session))
+admin.add_view(ModelView(Seed, db.session))
+admin.add_view(ModelView(ProtectionPlants, db.session))
+admin.add_view(ModelView(Event, db.session))
+admin.add_view(ModelView(Plant, db.session))
 # admin.add_view(ModelView(Role, db.session))
 
 user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)

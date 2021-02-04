@@ -1,8 +1,59 @@
 {% extends 'base/base.html' %}
 {% block content %}
-<h1 class="mt-5">Sticky footer with fixed navbar</h1>
-<p class="lead">Pin a footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS. A
-    fixed navbar has been added with <code class="small">padding-top: 60px;</code> on the <code class="small">main
-        &gt; .container</code>.</p>
-<p>Back to <a href="../examples/sticky-footer/">the default sticky footer</a> minus the navbar.</p>
+
+<div class="row">
+    <div id="calendar"></div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='fullcalendar/main.js')}} "></script>
+<script src="{{ url_for('static', filename='fullcalendar/locales-all.js')}}"></script>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', function() {
+
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+      },
+      height: 'auto',
+      navLinks: true, // can click day/week names to navigate views
+      editable: false,
+      selectable: true,
+      selectMirror: true,
+      nowIndicator: true,
+
+      eventSources: [
+
+    // your event source
+    {
+      url: '/get_calendar',
+      method: 'POST',
+      extraParams: {
+        custom_param1: 'something',
+        custom_param2: 'somethingelse'
+      },
+      failure: function() {
+        alert('there was an error while fetching events!');
+      },
+    }
+
+    // any other sources...
+
+  ]
+    });
+
+    calendar.setOption('locale', 'ru');
+    calendar.render();
+  });
+
+
+
+</script>
 {% endblock %}

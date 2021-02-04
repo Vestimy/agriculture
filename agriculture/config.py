@@ -1,6 +1,6 @@
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:@localhost/myagr'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://vestimy:User1816!@localhost/myagr'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = 'uploads'
     DEBUG = True
